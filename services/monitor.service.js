@@ -1,7 +1,8 @@
 const fsp = require('fs-promise');
 const os = require('os');
+var edge = require('edge');
 if (os.platform().substring(0, 3) == 'win') {
-  const edge = require('edge');
+  edge = require('edge');
 }
 
 var firstIteration = true;
@@ -79,7 +80,7 @@ function WindowsService(updateInterval) {
                     }
                 */});
 
-                updateResources(updateInterval, function (error, result) {
+                updateResources(updateInterval, (error, result) => {
                     if (error) throw error;
                     this.resources = JSON.parse(result);
                 });
