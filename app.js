@@ -5,6 +5,7 @@ var mustache = require('mustache-express');
 var expressWs = require('express-ws')(app);
 
 var monitor = require('./controllers/monitor.controller.js');
+console.log('test');
 
 console.log('setting up mustache engine...');
 app.engine('mustache', mustache());
