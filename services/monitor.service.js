@@ -1,6 +1,5 @@
 const fsp = require('fs-promise');
 const os = require('os');
-var edge = require('edge');
 if (os.platform().substring(0, 3) == 'win') {
   edge = require('edge');
 }
