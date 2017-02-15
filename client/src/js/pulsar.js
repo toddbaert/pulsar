@@ -13,6 +13,8 @@
     });
 
     var CpuGraph = React.createClass({
+      history: [],
+
         getInitialState: function() {
             return {
               data: 0
@@ -26,11 +28,26 @@
               var delta = service.basic.cpu - this.state.data;
               var inc = 0;
               interval = setInterval(function(){
+                // record the data
+                this.history.push({time: +new Date(), value: this.state.data});
+                // make the frequency of updates proportional to the change in the data
                 this.setState({data: parseFloat(this.state.data + delta / (Math.abs(delta) || 1))});
               }.bind(this), 1000 / (Math.abs(delta) || 1));
             }.bind(this));
         },
         render: function() {
+
+          var line = [];
+          var prevX = null;
+          var prevY = null;
+          this.history.forEach(function(entry){
+            currentX = 400 - (+new Date() - entry.time) / 300000 * 400;
+            currentY = 100 - entry.value;
+            line.push(<LineComponent prevX={prevX || currentX} prevY={prevY || currentY} currentX={currentX} currentY={currentY}/>);
+            prevX = currentX;
+            prevY = currentY;
+          }.bind(this));
+
             return (
               <div style={{position: "relative"}} >
               <div style={{position: "absolute"}} >
@@ -44,6 +61,10 @@
                       <line x1="267" y1="0" x2="267" y2="100" strokeWidth=".5" stroke="grey"/>
                       <line x1="333" y1="0" x2="333" y2="100" strokeWidth=".5" stroke="grey"/>
                       <line x1="400" y1="0" x2="400" y2="100" strokeWidth=".5" stroke="grey"/>
+
+                    </g>
+                    <g>
+                      {line}
                     </g>
                 </svg>
                 </div>
@@ -60,6 +81,7 @@
     });
 
     var MemoryGraph = React.createClass({
+        history: [],
         getInitialState: function() {
             return {
               data: 0
@@ -73,12 +95,27 @@
               var delta = service.basic.memory - this.state.data;
               var inc = 0;
               interval = setInterval(function(){
+                // record the data
+                this.history.push({time: +new Date(), value: this.state.data});
+                // make the frequency of updates proportional to the change in the data
                 this.setState({data: parseFloat(this.state.data + delta / (Math.abs(delta) || 1))});
               }.bind(this), 1000 / (Math.abs(delta) || 1));
             }.bind(this));
         },
         render: function() {
             var coords = getCoords(this.state.data, 45);
+
+            var line = [];
+            var prevX = null;
+            var prevY = null;
+            this.history.forEach(function(entry){
+              currentX = 400 - (+new Date() - entry.time) / 300000 * 400;
+              currentY = 100 - entry.value;
+              line.push(<LineComponent prevX={prevX || currentX} prevY={prevY || currentY} currentX={currentX} currentY={currentY}/>);
+              prevX = currentX;
+              prevY = currentY;
+            }.bind(this));
+
             return (
               <div style={{position: "relative"}} >
                 <div style={{position: "absolute"}} >
@@ -93,6 +130,9 @@
                         <line x1="333" y1="0" x2="333" y2="100" strokeWidth=".5" stroke="grey"/>
                         <line x1="400" y1="0" x2="400" y2="100" strokeWidth=".5" stroke="grey"/>
                       </g>
+                      <g>
+                        {line}
+                      </g>
                     </svg>
                 </div>
                 <div style={{left: "420px", position: "absolute"}} >
@@ -106,6 +146,12 @@
               </div>
             );
         }
+    });
+
+    var LineComponent = React.createClass({
+      render: function() {
+        return (<line x1={this.props.prevX} y1={this.props.prevY} x2={this.props.currentX} y2={this.props.currentY} strokeWidth=".5" stroke="red"/>);
+      }
     });
 
     function getCoords(percent, center){
