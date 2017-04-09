@@ -14,7 +14,6 @@ var service = {
             this.socket = new WebSocket('ws://' + this.getHost() + '/monitor/basic');
             console.log('done creating new socket, setting onmessage ');
             this.socket.onmessage = function(event) {
-                console.log('got message' + event.data);
                 this.basic = JSON.parse(event.data);
                 this.messageCallbacks.forEach(function(callback){
                   callback.call();
